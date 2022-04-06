@@ -1,0 +1,51 @@
+databaseChangeLog:
+  - changeSet:
+      id: 007-add_advertisements
+      author: dolgopolova.vs
+      changes:
+        - createTable:
+            tableName: advertisements
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: region
+                  type: varchar
+              - column:
+                  name: pricePerMonth
+                  type: integer
+              - column:
+                  name: utilitiesIncluded
+                  type: boolean
+              - column:
+                  name: address
+                  type: varchar
+              - column:
+                  name: floor
+                  type: integer
+              - column:
+                  name: apartmentNumber
+                  type: integer
+              - column:
+                  name: numberOfRooms
+                  type: integer
+              - column:
+                  name: additionalDescription
+                  type: varchar
+              - column:
+                  name: status
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: integer
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user
+                    references: users(id)

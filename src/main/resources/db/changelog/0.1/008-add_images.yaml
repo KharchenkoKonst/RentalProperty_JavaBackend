@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: 008-add_images
+      author: dolgopolova.vs
+      changes:
+        - createTable:
+            tableName: images
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: url
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: advertisement_id
+                  type: integer
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_advertisement
+                    references: advertisements(id)

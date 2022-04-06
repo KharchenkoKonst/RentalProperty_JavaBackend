@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-fk_users
+      author: dolgopolova.vs
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: user_roles
+            constraintName: fk_user_roles_user
+            onDelete: CASCADE
+            onUpdate: RESTRICT
+            referencedColumnNames: id
+            referencedTableName: users

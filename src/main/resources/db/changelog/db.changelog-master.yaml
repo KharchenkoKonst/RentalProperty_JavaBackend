@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - includeAll:
+      path: "0.1"
+      relativeToChangelogFile: true
+      errorIfMissingOrEmpty: true

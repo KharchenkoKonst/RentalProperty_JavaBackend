@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create_user_roles
+      author: dolgopolova.vs
+      changes:
+        - createTable:
+            tableName: user_roles
+            columns:
+              - column:
+                  name: user_id
+                  type: int
+              - column:
+                  name: role_id
+                  type: int
