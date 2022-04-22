@@ -1,13 +1,14 @@
 package com.pv41.rentalproperty.controller;
 
-import com.pv41.rentalproperty.dto.AdvertisementDto;
+import com.pv41.rentalproperty.dto.AdvertisementRequestDto;
+import com.pv41.rentalproperty.dto.AdvertisementResponseDto;
 import com.pv41.rentalproperty.service.AdvertisementService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/advertisements/")
+@RequestMapping("api/v1/advertisements")
 public class AdvertisementController {
 
     private final AdvertisementService advertisementService;
@@ -16,18 +17,19 @@ public class AdvertisementController {
         this.advertisementService = advertisementService;
     }
 
-    @PostMapping(value = "add")
-    public void addAdvertisement(@RequestBody AdvertisementDto advertisementDto) {
-        advertisementService.addAdvertisement(advertisementDto);
+    @PostMapping
+    public void addAdvertisement(@RequestBody AdvertisementRequestDto advertisementRequestDto) {
+        advertisementService.addAdvertisement(advertisementRequestDto);
     }
 
-    @GetMapping(value = "getByUser")
-    public List<AdvertisementDto> getAdvertisementsByUser() {
-        return advertisementService.getAdvertisementsByCurrentUser();
+    @GetMapping(value = "/{username}")
+    public List<AdvertisementResponseDto> getAdvertisementsByUser(@PathVariable String username) {
+        return advertisementService.getAdvertisementsByUser(username);
     }
 
-    @GetMapping(value = "getAll")
-    public List<AdvertisementDto> getAllAdvertisements(){
+    @GetMapping
+    public List<AdvertisementResponseDto> getAllAdvertisements() {
         return advertisementService.getAll();
     }
+
 }

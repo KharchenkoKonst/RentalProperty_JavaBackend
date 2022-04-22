@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @RestController
-@RequestMapping(value = "api/v1/auth/")
+@RequestMapping(value = "api/v1/auth")
 @Slf4j
 public class AuthenticationController {
 
@@ -40,7 +40,7 @@ public class AuthenticationController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @PostMapping("login")
+    @PostMapping("/login")
     public ResponseEntity login(@RequestBody AuthenticationRequestDto requestDto) {
         try {
             String username = requestDto.getUsername();
@@ -61,7 +61,7 @@ public class AuthenticationController {
         }
     }
 
-    @PostMapping("register")
+    @PostMapping("/register")
     public void register(@RequestBody AuthenticationRequestDto requestDto) {
         User user = new User();
         user.setUsername(requestDto.getUsername());
@@ -69,15 +69,4 @@ public class AuthenticationController {
         userService.register(user);
     }
 
-    @GetMapping("validate")
-    public ResponseEntity<ValidationDto> validateToken() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (Objects.equals(username, "anonymousUser")) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        } else {
-            ValidationDto validationDto = new ValidationDto();
-            validationDto.setUsername(username);
-            return new ResponseEntity<>(validationDto, HttpStatus.OK);
-        }
-    }
 }

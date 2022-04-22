@@ -2,9 +2,11 @@ package com.pv41.rentalproperty.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
-public class AdvertisementDto {
+public class AdvertisementResponseDto {
     private String region;
-    private byte[] image;
+    private List<String> imagesUrl;
     private String ownerUsername;
 }

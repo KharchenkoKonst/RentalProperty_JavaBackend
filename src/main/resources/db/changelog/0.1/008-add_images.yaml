@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 008-add_images
+      id: 008-create_images
       author: dolgopolova.vs
       changes:
         - createTable:
@@ -15,6 +15,11 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: url
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
                   type: varchar
                   constraints:
                     nullable: false

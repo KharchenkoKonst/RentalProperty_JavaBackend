@@ -1,18 +1,16 @@
 package com.pv41.rentalproperty.service;
 
-import com.pv41.rentalproperty.dto.AdvertisementDto;
-import com.pv41.rentalproperty.model.Advertisement;
+import com.pv41.rentalproperty.dto.AdvertisementRequestDto;
+import com.pv41.rentalproperty.dto.AdvertisementResponseDto;
 
 import java.util.List;
 
 public interface AdvertisementService {
 
-    void addAdvertisement(AdvertisementDto advertisementDto);
+    void addAdvertisement(AdvertisementRequestDto advertisementRequestDto);
 
-    List<AdvertisementDto> getAdvertisementsByCurrentUser();
+    List<AdvertisementResponseDto> getAdvertisementsByUser(String username);
 
-    List<AdvertisementDto> getAll();
-
-
+    List<AdvertisementResponseDto> getAll();
 
 }
