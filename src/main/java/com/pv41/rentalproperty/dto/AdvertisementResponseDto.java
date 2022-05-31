@@ -6,7 +6,23 @@ import java.util.List;
 
 @Data
 public class AdvertisementResponseDto {
+    private Long id;
+    private String propertyType;
     private String region;
+    private String address;
+    private Integer apartmentNumber;
+    private Integer areaSummary;
+    private Integer areaLiving;
+    private Integer roomsCount;
+    private Integer pricePerMonth;
+    private Integer deposit;
+    private Integer floorNumber;
+    private Integer floorTotal;
+    private String furniture;
+    private String accommodations;
+    private String additionalDescription;
+    private String contactPhoneNumber;
     private List<String> imagesUrl;
-    private String ownerUsername;
+    private String ownerFirstName;
+    private String ownerLastName;
 }

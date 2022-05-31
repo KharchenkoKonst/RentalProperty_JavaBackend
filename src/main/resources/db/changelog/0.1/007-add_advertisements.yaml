@@ -14,29 +14,66 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
+                  name: property_type
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
                   name: region
                   type: varchar
-              - column:
-                  name: pricePerMonth
-                  type: integer
-              - column:
-                  name: utilitiesIncluded
-                  type: boolean
+                  constraints:
+                    nullable: false
               - column:
                   name: address
                   type: varchar
+                  constraints:
+                    nullable: false
               - column:
-                  name: floor
+                  name: apartment_number
                   type: integer
               - column:
-                  name: apartmentNumber
+                  name: area_summary
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: area_living
                   type: integer
               - column:
-                  name: numberOfRooms
+                  name: rooms_count
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price_per_month
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deposit
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: floor_number
                   type: integer
               - column:
-                  name: additionalDescription
+                  name: floor_total
+                  type: integer
+              - column:
+                  name: furniture
                   type: varchar
+              - column:
+                  name: accommodations
+                  type: varchar
+              - column:
+                  name: additional_description
+                  type: varchar
+              - column:
+                  name: contact_phone_number
+                  type: varchar
+                  constraints:
+                    nullable: false
               - column:
                   name: status
                   type: varchar

@@ -43,7 +43,6 @@ public class MinioServiceImpl implements MinioService {
             log.error(e.getMessage());
         }
     }
-/*
 
     @Override
     public Optional<byte[]> getFromStorage(String url) {
@@ -66,21 +65,20 @@ public class MinioServiceImpl implements MinioService {
     @Override
     public String getMinioUrl() {
         try {
-//            Map<String, String> reqParams = new HashMap<>();
-//            reqParams.put("response-content-type", "image");
+            Map<String, String> reqParams = new HashMap<>();
+            reqParams.put("response-content-type", "image");
             return minioClient.getPresignedObjectUrl(
                     GetPresignedObjectUrlArgs.builder()
                             .method(Method.GET)
                             .bucket(bucket)
                             .object("b0a9ccdd-eb6c-4dc8-9402-6813d150402d")
                             .expiry(2, TimeUnit.HOURS)
-//                            .extraQueryParams(reqParams)
+                            .extraQueryParams(reqParams)
                             .build()
             );
         } catch (Exception e){
             return "";
         }
     }
-*/
 
 }

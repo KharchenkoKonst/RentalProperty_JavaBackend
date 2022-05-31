@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -43,12 +42,12 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
     @Override
     public void addAdvertisement(AdvertisementRequestDto advertisementRequestDto) {
-        try {
-            Advertisement advertisement = advertisementMapper.advertisementRequestDtoToEntity(advertisementRequestDto);
-            advertisement.setUser(userRepository.findByUsername(getCurrentUsername()));
-            advertisement.setStatus(Status.ACTIVE);
-            advertisementRepository.save(advertisement);
+        Advertisement advertisement = advertisementMapper.advertisementRequestDtoToEntity(advertisementRequestDto);
+        advertisement.setUser(userRepository.findByLogin(getCurrentLogin()));
+        advertisement.setStatus(Status.ACTIVE);
+        advertisementRepository.save(advertisement);
 
+        if (advertisementRequestDto.getImages() != null) {
             for (int i = 0; i < advertisementRequestDto.getImages().size(); i++) {
                 String imageUrl = UUID.randomUUID().toString();
                 minioService.saveToStorage(advertisementRequestDto.getImages().get(i), imageUrl);
@@ -58,15 +57,13 @@ public class AdvertisementServiceImpl implements AdvertisementService {
                 imageEntity.setStatus(Status.ACTIVE);
                 imageRepository.save(imageEntity);
             }
-        } catch (Exception e) {
-            log.error(e.getMessage());
         }
     }
 
     @Override
     public List<AdvertisementResponseDto> getAdvertisementsByUser(String username) {
         List<AdvertisementResponseDto> advertisementResponseDtoList = new ArrayList<>();
-        advertisementRepository.findByUser(userRepository.findByUsername(username)).forEach(it -> {
+        advertisementRepository.findByUser(userRepository.findByLogin(username)).forEach(it -> {
             AdvertisementResponseDto advertisementResponseDto = advertisementMapper.advertisementEntityToResponseDto(it);
             advertisementResponseDtoList.add(advertisementResponseDto);
         });
@@ -77,24 +74,14 @@ public class AdvertisementServiceImpl implements AdvertisementService {
     public List<AdvertisementResponseDto> getAll() {
         List<AdvertisementResponseDto> advertisementResponseDtoList = new ArrayList<>();
         advertisementRepository.findAll().forEach(it -> {
-            String ownerUsername = it.getUser().getUsername();
             AdvertisementResponseDto advertisementResponseDto = advertisementMapper.advertisementEntityToResponseDto(it);
-/*
-            List<byte[]> images = new ArrayList<>();
-            for (Image url : it.getImageURLs()) {
-                Optional<byte[]> imageOpt = minioService.getFromStorage(url.getUrl());
-                imageOpt.ifPresent(images::add);
-            }
-            advertisementResponseDto.setImages(images);
-*/
-            advertisementResponseDto.setOwnerUsername(ownerUsername);
             advertisementResponseDtoList.add(advertisementResponseDto);
         });
         return advertisementResponseDtoList;
     }
 
 
-    private String getCurrentUsername() {
+    private String getCurrentLogin() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth.getName();
     }

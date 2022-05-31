@@ -9,18 +9,18 @@ import java.util.Collection;
 public class JwtUser implements UserDetails {
 
     private final Long id;
-    private final String username;
+    private final String login;
     private final String password;
     private final boolean enabled;
     private final Collection<? extends GrantedAuthority> authorities;
 
     public JwtUser(Long id,
-                   String username,
+                   String login,
                    String password,
                    boolean enabled,
                    Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
-        this.username = username;
+        this.login = login;
         this.password = password;
         this.enabled = enabled;
         this.authorities = authorities;
@@ -44,7 +44,7 @@ public class JwtUser implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return login;
     }
 
     @JsonIgnore

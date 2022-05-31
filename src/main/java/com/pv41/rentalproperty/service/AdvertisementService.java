@@ -9,7 +9,7 @@ public interface AdvertisementService {
 
     void addAdvertisement(AdvertisementRequestDto advertisementRequestDto);
 
-    List<AdvertisementResponseDto> getAdvertisementsByUser(String username);
+    List<AdvertisementResponseDto> getAdvertisementsByUser(String login);
 
     List<AdvertisementResponseDto> getAll();
 

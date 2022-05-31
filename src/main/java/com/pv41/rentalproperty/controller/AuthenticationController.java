@@ -1,25 +1,21 @@
 package com.pv41.rentalproperty.controller;
 
 import com.pv41.rentalproperty.dto.AuthenticationRequestDto;
-import com.pv41.rentalproperty.dto.ValidationDto;
+import com.pv41.rentalproperty.dto.AuthenticationResponseDto;
+import com.pv41.rentalproperty.exceptions.LoginUnavailableException;
 import com.pv41.rentalproperty.model.User;
 import com.pv41.rentalproperty.security.jwt.JwtTokenProvider;
 import com.pv41.rentalproperty.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import javax.mail.internet.AddressException;
 
 @RestController
 @RequestMapping(value = "api/v1/auth")
@@ -43,30 +39,70 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody AuthenticationRequestDto requestDto) {
         try {
-            String username = requestDto.getUsername();
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                    username, requestDto.getPassword()
-            ));
-            User user = userService.findByUsername(username);
-            if (user == null) {
-                throw new UsernameNotFoundException("User with username " + username + " not found");
+            if (!loginDataIsCorrect(requestDto)) {
+                throw new IllegalArgumentException();
             }
-            String token = jwtTokenProvider.createToken(username, user.getRoles());
-            Map<Object, Object> response = new HashMap<>();
-            response.put("username", username);
-            response.put("token", token);
+
+            String login = requestDto.getLogin();
+            User user = userService.findByLogin(login);
+            if (user == null) {
+                throw new UsernameNotFoundException("User with login " + login + " not found");
+            }
+
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    login, requestDto.getPassword()
+            ));
+            String accessToken = jwtTokenProvider.createAccessToken(login, user.getRoles());
+            String refreshToken = jwtTokenProvider.createRefreshToken(login, user.getRoles());
+
+            AuthenticationResponseDto response = new AuthenticationResponseDto();
+            response.setAccessToken(accessToken);
+            response.setRefreshToken(refreshToken);
             return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Incorrect input");
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.badRequest().body("User not found");
+        } catch (AuthenticationException e) {
+            return ResponseEntity.badRequest().body("Incorrect password");
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return ResponseEntity.internalServerError().body("Server error");
         }
     }
 
     @PostMapping("/register")
-    public void register(@RequestBody AuthenticationRequestDto requestDto) {
-        User user = new User();
-        user.setUsername(requestDto.getUsername());
-        user.setPassword(requestDto.getPassword());
-        userService.register(user);
+    public ResponseEntity register(@RequestBody AuthenticationRequestDto requestDto) {
+        try {
+            if (!registerDataIsCorrect(requestDto)) {
+                throw new IllegalArgumentException();
+            }
+            User user = new User();
+            user.setLogin(requestDto.getLogin());
+            user.setPassword(requestDto.getPassword());
+            user.setFirstName(requestDto.getFirstName());
+            user.setLastName(requestDto.getLastName());
+            userService.register(user);
+            return ResponseEntity.ok("Success registered");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Incorrect input");
+        } catch (AddressException e) {
+            return ResponseEntity.badRequest().body("Incorrect mail");
+        } catch (LoginUnavailableException e) {
+            return ResponseEntity.badRequest().body("Login not available");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Server error");
+        }
     }
 
+    private Boolean registerDataIsCorrect(AuthenticationRequestDto request) {
+        return request.getLogin() != null
+                && request.getPassword() != null
+                && request.getFirstName() != null
+                && request.getLastName() != null;
+    }
+
+    private Boolean loginDataIsCorrect(AuthenticationRequestDto request) {
+        return request.getLogin() != null
+                && request.getPassword() != null;
+    }
 }

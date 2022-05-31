@@ -1,0 +1,9 @@
+@startuml
+
+entity users {
+    *id : Long
+    --
+
+}
+
+@enduml

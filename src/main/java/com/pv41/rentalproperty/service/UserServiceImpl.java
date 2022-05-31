@@ -1,5 +1,6 @@
 package com.pv41.rentalproperty.service;
 
+import com.pv41.rentalproperty.exceptions.LoginUnavailableException;
 import com.pv41.rentalproperty.model.Role;
 import com.pv41.rentalproperty.model.Status;
 import com.pv41.rentalproperty.model.User;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +35,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void register(User user) {
+    public void register(User user) throws AddressException, LoginUnavailableException {
+
+        validateMail(user.getLogin());
+        checkLoginAvailability(user.getLogin());
+
         Role roleUser = roleRepository.findByName("ROLE_BASE");
         List<Role> userRoles = new ArrayList<>();
         userRoles.add(roleUser);
@@ -52,9 +59,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByUsername(String username) {
-        User result = userRepository.findByUsername(username);
-        log.info("User {} found by username {}", result, username);
+    public User findByLogin(String login) {
+        User result = userRepository.findByLogin(login);
+        log.info("User {} found by login {}", result, login);
         return result;
     }
 
@@ -73,5 +80,16 @@ public class UserServiceImpl implements UserService {
     public void delete(Long id) {
         userRepository.deleteById(id);
         log.info("User with id {} successfully deleted", id);
+    }
+
+    private void validateMail(String mail) throws AddressException {
+        InternetAddress emailAddress = new InternetAddress(mail);
+        emailAddress.validate();
+    }
+
+    private void checkLoginAvailability(String login) throws LoginUnavailableException {
+        if (userRepository.findByLogin(login) != null) {
+            throw new LoginUnavailableException();
+        }
     }
 }

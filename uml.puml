@@ -1,0 +1,142 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class AdvertisementController {
+    -AdvertisementService
+    +List<AdvertisementResponseDto> getAdvertisements()
+    +List<AdvertisementResponseDto> getAdvertisementsByUser(String login)
+    +List<AdvertisementResponseDto> getAdvertisementsByRegion(String region)
+    +AdvertisementResponseDto getAdvertisement(AdvertisementRequestDto)
+    +void deleteAdvertisement(AdvertisementRequestDto)
+    +void updateAdvertisement(AdvertisementRequestDto)
+}
+AdvertisementController o-- AdvertisementService
+
+interface AdvertisementService {
+    +List<AdvertisementResponseDto> getAdvertisements()
+    +List<AdvertisementResponseDto> getAdvertisementsByUser(String login)
+    +List<AdvertisementResponseDto> getAdvertisementsByRegion(String region)
+    +AdvertisementResponseDto getAdvertisement(AdvertisementRequestDto)
+    +void deleteAdvertisement(AdvertisementRequestDto)
+    +void updateAdvertisement(AdvertisementRequestDto)
+    +void addAdvertisement(AdvertisementRequestDto)
+    +void delistAdvertisement(Advertisement)
+}
+AdvertisementService <|.. AdvertisementServiceImpl
+
+class AdvertisementServiceImpl {
+    -MinioService
+    -UserRepository
+    -AdvertisementMapper
+    -ImageRepository
+    -AdvertisementRepository advertisementRepository
+
+    +void addAdvertisement(AdvertisementRequestDto)
+    +List<AdvertisementResponseDto> getAdvertisements()
+    +List<AdvertisementResponseDto> getAdvertisementsByUser(String login)
+    +List<AdvertisementResponseDto> getAdvertisementsByRegion(String region)
+    +AdvertisementResponseDto getAdvertisement(AdvertisementRequestDto)
+    +void deleteAdvertisement(AdvertisementRequestDto)
+    +void updateAdvertisement(AdvertisementRequestDto)
+    +void delistAdvertisement(Advertisement)
+    -String getCurrentLogin()
+}
+AdvertisementServiceImpl *-- AdvertisementRepository
+AdvertisementServiceImpl *-- ImageRepository
+AdvertisementServiceImpl *-- UserRepository
+AdvertisementServiceImpl *-- MinioService
+AdvertisementServiceImpl *-- AdvertisementMapper
+
+class AdvertisementMapper {
+    Advertisement advertisementRequestDtoToEntity(AuthenticationRequestDto)
+    AdvertisementResponseDto advertisementEntityToResponseDto(Advertisement)
+}
+
+class AuthenticationController{
+    -JwtTokenProvider
+    -UserService
+    -AuthenticationManager
+    +void register(AuthenticationRequestDto)
+    +AuthenticationResponseDto login(AuthenticationRequestDto)
+    +AdvertisementResponseDto refresh(AuthenticationRequestDto)
+}
+AuthenticationController o-- UserService
+
+interface UserService {
+    +List<User> getAll()
+    +void delete(Long id)
+    +void register(User)
+    +User findById(Long id)
+    +User findByLogin(String login)
+}
+UserService <|.. UserServiceImpl
+
+class UserServiceImpl {
+    -RoleRepository
+    -PasswordEncoder
+    -UserRepository
+
+    +List<User> getAll()
+    +void delete(Long id)
+    +void register(User)
+    +User findById(Long id)
+    +User findByLogin(String login)
+}
+UserServiceImpl *-- RoleRepository
+UserServiceImpl *-- UserRepository
+
+class RentalController {
+    +void addRental(RentalRequestDto)
+    +RentalResponseDto getRentalByAdvertisementId(Long id)
+    +RentalResponseDto getRentalByUser(String login)
+    +void updateRental(RentalRequestDto)
+    +void approveRental(RentalRequestDto)
+    +void rejectRental(RentalRequestDto)
+    +getDocuments(RentalRequestDto)
+}
+RentalController o-- RentalService
+
+interface RentalService {
+    +void addRental(RentalRequestDto)
+    +RentalResponseDto getRentalByAdvertisementId(Long id)
+    +RentalResponseDto getRentalByUser(String login)
+    +void updateRental(RentalRequestDto)
+    +void approveRental(RentalRequestDto)
+    +void rejectRental(RentalRequestDto)
+    +getDocuments(RentalRequestDto)
+}
+RentalService <|. RentalServiceImpl
+
+class RentalServiceImpl {
+    -RentalRepository
+    -UserRepository
+    -AdvertisementService
+
+    +void addRental(Advertisement, User)
+    +RentalResponseDto getRental(Long id)
+    +RentalResponseDto getRentalByAdvertisement(Advertisement)
+    +RentalResponseDto getRentalByUser(User)
+    +void updateRental(Rental)
+    +void approveRental(Rental)
+    +void rejectRental(Rental)
+    +getDocuments(Rental)
+}
+RentalServiceImpl *-- RentalRepository
+RentalServiceImpl *- UserRepository
+RentalServiceImpl *- AdvertisementService
+
+interface MinioService {
+    +void saveToStorage(byte[] image, String url)
+}
+class MinioServiceImpl{
+    +void saveToStorage(byte[] image, String url)
+}
+MinioService <|.. MinioServiceImpl
+
+interface UserRepository
+interface AdvertisementRepository
+interface ImageRepository
+interface RoleRepository
+interface RentalRepository
+
+@enduml
